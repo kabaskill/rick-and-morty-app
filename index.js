@@ -12,11 +12,11 @@ const pagination = document.querySelector('[data-js="pagination"]');
 const searchBarInput = document.querySelector(`[data-js="search-bar-input"]`);
 
 // States
-const maxPage = 42;
+let maxPage = 42;
 //we will get the data.info.pages some time to CHANGE THIS hardcoded thing
 
 let page = 1;
-const searchQuery = "";
+const searchQuery = ""; /* can also asign the value from the input field*/
 
 cardRepeater(1);
 
@@ -37,7 +37,7 @@ prevButton.addEventListener("click", () => {
 async function cardRepeater(pageIndex) {
   const url = `https://rickandmortyapi.com/api/character?page=${pageIndex}`;
   const data = await fetchCharacters(url);
-  const resultsFromData = data.results;
+  const resultsFromData = data.results; /* Destructure results from data */
 
   cardContainer.innerHTML = "";
 
@@ -59,8 +59,9 @@ async function fetchCharacters(url) {
 
 searchBar.addEventListener("submit", async (event) => {
   event.preventDefault();
-  console.log(searchBarInput.value);
-  const url = `https://rickandmortyapi.com/api/character?&name=${searchBarInput.value}`;
+  console.log(searchBar.elements[`query`]);
+  console.log(searchBarInput.value); /* target */
+  const url = `https://rickandmortyapi.com/api/character?name=${searchBarInput.value}`;
   const data = await fetchCharacters(url);
   const resultsFromData = data.results;
 
@@ -70,3 +71,8 @@ searchBar.addEventListener("submit", async (event) => {
 
   pagination.textContent = `1 / 1`;
 });
+
+/* 
+  we need to check the search results when we have no results
+
+ */

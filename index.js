@@ -9,14 +9,13 @@ const navigation = document.querySelector('[data-js="navigation"]');
 const prevButton = document.querySelector('[data-js="button-prev"]');
 const nextButton = document.querySelector('[data-js="button-next"]');
 const pagination = document.querySelector('[data-js="pagination"]');
-const searchBarInput = document.querySelector(`[data-js="search-bar-input"]`);
 
 // States
-let maxPage = 42;
-//we will get the data.info.pages some time to CHANGE THIS hardcoded thing
+let maxPage = (
+  await fetchCharacters("https://rickandmortyapi.com/api/character")
+).info.pages;
 
 let page = 1;
-const searchQuery = ""; /* can also asign the value from the input field*/
 
 cardRepeater(1);
 
@@ -33,35 +32,10 @@ prevButton.addEventListener("click", () => {
   cardRepeater(page);
 });
 
-/////     FUNCTIONS     /////
-async function cardRepeater(pageIndex) {
-  const url = `https://rickandmortyapi.com/api/character?page=${pageIndex}`;
-  const data = await fetchCharacters(url);
-  const resultsFromData = data.results; /* Destructure results from data */
-
-  cardContainer.innerHTML = "";
-
-  resultsFromData.forEach((item) => cardContainer.append(CharacterCard(item)));
-
-  pagination.textContent = `${pageIndex} / ${maxPage}`;
-}
-
-async function fetchCharacters(url) {
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 searchBar.addEventListener("submit", async (event) => {
   event.preventDefault();
-  console.log(searchBar.elements[`query`]);
-  console.log(searchBarInput.value); /* target */
-  const url = `https://rickandmortyapi.com/api/character?name=${searchBarInput.value}`;
+  const searchQuery = searchBar.elements[`query`].value;
+  const url = `https://rickandmortyapi.com/api/character?name=${searchQuery}`; //// this doesn't work when somebody searches something that doesn't exist
   const data = await fetchCharacters(url);
   const resultsFromData = data.results;
 
@@ -72,7 +46,27 @@ searchBar.addEventListener("submit", async (event) => {
   pagination.textContent = `1 / 1`;
 });
 
-/* 
-  we need to check the search results when we have no results
+/////     FUNCTIONS     /////
+async function cardRepeater(pageIndex) {
+  const url = `https://rickandmortyapi.com/api/character?page=${pageIndex}`;
+  const data = await fetchCharacters(url);
+  // const resultsFromData = data.results; /* Destructure results from data */
+  const { results } = data;
 
- */
+  cardContainer.innerHTML = "";
+
+  results.forEach((item) => cardContainer.append(CharacterCard(item)));
+
+  pagination.textContent = `${pageIndex} / ${maxPage}`;
+}
+
+async function fetchCharacters(url) {
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    // console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
